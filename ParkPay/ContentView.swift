@@ -6,16 +6,36 @@
 //
 
 import SwiftUI
+import MapKit        // 顯示地圖、座標、Region、Annotation
 
 struct ContentView: View {
+    @EnvironmentObject var locationService: LocationService
+
+    @State private var position: MapCameraPosition = .region(.init())
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Map(position: $position) {
+            UserAnnotation()
         }
-        .padding()
+        .mapControls {
+            MapUserLocationButton()
+            MapCompass()
+        }
+        .edgesIgnoringSafeArea(.all)
+        .onAppear {
+            locationService.requestLocation()
+        }
+        .onChange(of: locationService.lastLocation) { oldValue, newValue in
+            guard oldValue != newValue, let location = newValue else {
+                return
+            }
+            position = .region(
+                MKCoordinateRegion(
+                    center: location.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )
+            )
+        }
     }
 }
 

@@ -26,10 +26,25 @@ struct GoogleMapView: UIViewRepresentable {
         let mapView = GMSMapView(options: options)
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
+
+        let markerView = GMSMarker(position: center)
+        markerView.iconView = makeMarkerView(MarkerView(title: "Stone"))
+        // Align the bottom of the marker to the coordinate point
+        markerView.groundAnchor = .init(x: 0.5, y: 1.0)
+        markerView.appearAnimation = .pop
+
+        // Create marker view -> UIView
+        Task { @MainActor in
+            markerView.map = mapView
+        }
+
+        context.coordinator.marker = markerView
         return mapView
     }
 
     func updateUIView(_ uiView: GMSMapView, context: Context) {
         // update map data here
+
+        context.coordinator.marker?.position = center
     }
 }

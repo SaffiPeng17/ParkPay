@@ -15,8 +15,8 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             GoogleMapView(
-                center: CLLocationCoordinate2D(latitude: 25.0478, longitude: 121.5170),
-                zoom: 14
+                center: CLLocationCoordinate2D(latitude: 25.04385, longitude: 121.56064),
+                zoom: 16
             )
             .ignoresSafeArea()
             .onAppear {

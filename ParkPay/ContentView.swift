@@ -10,6 +10,7 @@ import CoreLocation
 
 struct ContentView: View {
     @StateObject private var locationService = LocationService()
+    @State private var showToast = false
 
     var body: some View {
         ZStack {
@@ -20,10 +21,17 @@ struct ContentView: View {
             .ignoresSafeArea()
             .onAppear {
                 locationService.requestPermission()
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    withAnimation {
+                        showToast = true
+                    }
+                }
             }
-
-            Text(statusText(locationService.authorizationStatus))
-
+            .toast(
+                isPresented: $showToast,
+                message: statusText(locationService.authorizationStatus)
+            )
         }
     }
 

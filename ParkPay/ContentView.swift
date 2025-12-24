@@ -6,35 +6,35 @@
 //
 
 import SwiftUI
-import MapKit        // 顯示地圖、座標、Region、Annotation
+import CoreLocation
 
 struct ContentView: View {
-    @EnvironmentObject var locationService: LocationService
-
-    @State private var position: MapCameraPosition = .region(.init())
+    @StateObject private var locationService = LocationService()
 
     var body: some View {
-        Map(position: $position) {
-            UserAnnotation()
-        }
-        .mapControls {
-            MapUserLocationButton()
-            MapCompass()
-        }
-        .edgesIgnoringSafeArea(.all)
-        .onAppear {
-            locationService.requestLocation()
-        }
-        .onChange(of: locationService.lastLocation) { oldValue, newValue in
-            guard oldValue != newValue, let location = newValue else {
-                return
-            }
-            position = .region(
-                MKCoordinateRegion(
-                    center: location.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                )
+        ZStack {
+            GoogleMapView(
+                center: CLLocationCoordinate2D(latitude: 25.0478, longitude: 121.5170),
+                zoom: 14
             )
+            .ignoresSafeArea()
+            .onAppear {
+                locationService.requestPermission()
+            }
+
+            Text(statusText(locationService.authorizationStatus))
+
+        }
+    }
+
+    private func statusText(_ status: CLAuthorizationStatus) -> String {
+        switch status {
+        case .notDetermined: return "Not Determined"
+        case .restricted: return "Restricted"
+        case .denied: return "Denied" // Can be modified in Settings
+        case .authorizedWhenInUse: return "Authorized: WhenInUse"
+        case .authorizedAlways: return "Authorized: Always"
+        @unknown default: return "Unknown"
         }
     }
 }

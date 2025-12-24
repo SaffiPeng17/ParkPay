@@ -9,12 +9,11 @@ import SwiftUI
 
 @main
 struct ParkPayApp: App {
-    @StateObject var locationService = LocationService()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(locationService)
         }
     }
 }

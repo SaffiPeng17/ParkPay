@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		756F8E0E2EED7E4200ABAC26 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 756F8E0D2EED7E4200ABAC26 /* GoogleMaps */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		759852342EE4B4DA00796D1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				756F8E0E2EED7E4200ABAC26 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = ParkPay;
 			packageProductDependencies = (
+				756F8E0D2EED7E4200ABAC26 /* GoogleMaps */,
 			);
 			productName = ParkPay;
 			productReference = 759852262EE4B4D800796D1A /* ParkPay.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 7598521D2EE4B4D800796D1A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				756F8E0C2EED7E4200ABAC26 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 759852272EE4B4D800796D1A /* Products */;
 			projectDirPath = "";
@@ -568,6 +577,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		756F8E0C2EED7E4200ABAC26 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		756F8E0D2EED7E4200ABAC26 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 756F8E0C2EED7E4200ABAC26 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7598521E2EE4B4D800796D1A /* Project object */;
 }

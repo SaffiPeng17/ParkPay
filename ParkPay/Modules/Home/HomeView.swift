@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreLocation
 
-struct ContentView: View {
+struct HomeView: View {
     @StateObject private var locationService = LocationService()
     @State private var showToast = false
 
@@ -48,5 +48,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    HomeView()
 }

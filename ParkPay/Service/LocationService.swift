@@ -12,9 +12,16 @@ import CoreLocation
 final class LocationService: NSObject, ObservableObject {
     private let manager = CLLocationManager()
 
+    // Output
+    @Published private(set) var authStatus: String = ""
+
     // Properties
-    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    @Published var location: CLLocation?
+    private var authorizationStatus: CLAuthorizationStatus = .notDetermined {
+        didSet {
+            authStatus = statusText(authorizationStatus)
+        }
+    }
+    private var location: CLLocation?
 
     // Initial
     override init() {
@@ -22,6 +29,7 @@ final class LocationService: NSObject, ObservableObject {
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
         authorizationStatus = manager.authorizationStatus
+        authStatus = statusText(authorizationStatus)
     }
 }
 
@@ -51,6 +59,17 @@ private extension LocationService {
     func openAppSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
+    }
+
+    func statusText(_ status: CLAuthorizationStatus) -> String {
+        switch status {
+        case .notDetermined: return "Not Determined"
+        case .restricted: return "Restricted"
+        case .denied: return "Denied" // Can be modified in Settings
+        case .authorizedWhenInUse: return "Authorized: WhenInUse"
+        case .authorizedAlways: return "Authorized: Always"
+        @unknown default: return "Unknown"
+        }
     }
 }
 

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var searchText = ""
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack(spacing: 20) {
@@ -23,6 +24,7 @@ struct SearchView: View {
                                     .foregroundColor(.gray.opacity(0.3)))
                     .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(.black)
+                    .focused($isFocused)
 
                 if !searchText.isEmpty {
                     Button {
@@ -69,6 +71,9 @@ struct SearchView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.white)
+        .onTapGesture {
+            isFocused = false
+        }
     }
 
     @ViewBuilder

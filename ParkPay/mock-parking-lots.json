@@ -1,0 +1,66 @@
+{
+    "success": true,
+    "data": [
+        {
+            "park_id": "TPE0002",
+            "area": "信義區",
+            "name": "嘟嘟房世貿一館站停車場",
+            "address": "信義路5段5號地下1層",
+            "tel": "0226550818",
+            "total_car": 335,
+            "total_motor": 0,
+            "total_bike": 0,
+            "total_bus": 0
+        },
+        {
+            "park_id": "TPE0033",
+            "area": "信義區",
+            "name": "嘟嘟房世貿站停車場",
+            "address": "信義路5段1號地下1至2層",
+            "tel": "0226550818",
+            "total_car": 382,
+            "total_motor": 0,
+            "total_bike": 0,
+            "total_bus": 9
+        },
+        {
+            "park_id": "TPE0698",
+            "area": "信義區",
+            "name": "愛馬屋世貿場",
+            "address": "光復南路567號",
+            "tel": "0223457749",
+            "total_car": 15,
+            "total_motor": 0,
+            "total_bike": 0,
+            "total_bus": 0
+        },
+        {
+            "park_id": "TPE0325",
+            "area": "信義區",
+            "name": "環球世貿大樓停車場",
+            "address": "信義路5段150巷2號地下3層",
+            "tel": "022720-7679",
+            "total_car": 24,
+            "total_motor": 0,
+            "total_bike": 0,
+            "total_bus": 0
+        },
+        {
+            "park_id": "TPE0827",
+            "area": "南港區",
+            "name": "世貿公園地下停車場",
+            "address": "經貿二路88巷1號地下",
+            "tel": "0228817033",
+            "total_car": 400,
+            "total_motor": 194,
+            "total_bike": 0,
+            "total_bus": 0
+        }
+    ],
+    "pagination": {
+        "page": 1,
+        "limit": 20,
+        "total": 5,
+        "totalPages": 1
+    }
+}

@@ -8,13 +8,7 @@
 import SwiftUI
 
 struct ParkingLotInfoView: View {
-    let title: String
-    let leftCount: Int
-    let totalCount: Int
-    let address: String
-    let phone: String
-    let time: String
-    let price: String
+    let parkingLot: ParkingLot
 
     @Environment(\.dismiss) private var dismiss
     
@@ -34,26 +28,26 @@ struct ParkingLotInfoView: View {
 
                 VStack(alignment: .center, spacing: 18) {
                     // Title
-                    HStack(spacing: 10) {
-                        Image(systemName: "parkingsign.square.fill")
-                            .font(.system(size: 18))
-                            .foregroundStyle(.blue)
+                    HStack(spacing: 8) {
+                        TagView(area: parkingLot.area,
+                                areaStyle: parkingLot.areaStyle,
+                                hasOutline: false)
 
-                        Text(title)
+                        Text(parkingLot.name)
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(.black)
                     }
                     // LeftCount, TotalCount
                     HStack(spacing: 30) {
-                        parkingSpacesItem(title: "剩餘車位", count: leftCount, highlight: true)
-                        parkingSpacesItem(title: "總共車位", count: totalCount)
+                        parkingSpacesItem(title: "剩餘車位", count: 2, highlight: true)
+                        parkingSpacesItem(title: "總共車位", count: parkingLot.totalCar)
                     }
                     // Details
                     VStack(alignment: .center, spacing: 10) {
-                        infoItem(icon: "location", content: address)
-                        infoItem(icon: "phone", content: phone)
-                        infoItem(icon: "clock", content: time)
-                        priceItem(content: price)
+                        infoItem(icon: "location", content: parkingLot.address)
+                        infoItem(icon: "phone", content: parkingLot.tel)
+                        infoItem(icon: "clock", content: "24H")
+                        priceItem(content: "小型車：計時 30元/時(08-20)，20元/時(20-08)，展覽期間小型車60元/時(9-17)，停車全程以半小時計；月租 全日4，800元，日間4，000元(08-20)，夜間1，500元(週一至週五19-08，週六、日及政府行政機關放假之紀念日、民俗節日之全日)，大型重機2，400元/月。機車：20元/次，隔日另計；月租300元/月。")
                     }
                 }
                 .padding(18)
@@ -131,11 +125,12 @@ struct ParkingLotInfoView: View {
 }
 
 #Preview {
-    ParkingLotInfoView(title: "Parking 1",
-                       leftCount: 10,
-                       totalCount: 200,
-                       address: "台北市南港區",
-                       phone: "02-21315235",
-                       time: "24H",
-                       price: "計時：150元/時，停車未滿1小時以1小時計，逾1小時以上者，未滿半小時以半小時計。月租：10，000元/月。")
+    ParkingLotInfoView(parkingLot: .init(parkID: "1",
+                                         area: "南港區",
+                                         name: "世貿公園地下停車場",
+                                         address: "台北市南港區", tel: "02-21315235",
+                                         totalCar: 600,
+                                         totalMotor: 0,
+                                         totalBike: 0,
+                                         totalBus: 0))
 }

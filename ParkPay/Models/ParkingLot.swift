@@ -7,10 +7,27 @@
 
 import Foundation
 
-struct ParkingLotResponse: Codable {
+// MARK: - Request
+struct ParkingLotsRequest: Codable {
+    var page: Int = 1    // Page number, starting from 1 (default: 1)
+    var limit: Int = 20  // Number of items per page (default: 20)
+    var area: String?    // Administrative district filter, e.g. "Xinyi District", "Da’an District" (optional)
+    var name: String?    // Parking lot name search with partial matching (optional)
+    var keyword: String? // Keyword search that matches area, name, and address (optional)
+}
+
+// MARK: - Response
+struct ParkingLotsResponse: Codable {
     let success: Bool
     let data: [ParkingLot]
     let pagination: Pagination
+}
+
+struct Pagination: Codable {
+    let page: Int
+    let limit: Int
+    let total: Int
+    let totalPages: Int
 }
 
 struct ParkingLot: Codable, Identifiable {
@@ -39,14 +56,7 @@ struct ParkingLot: Codable, Identifiable {
     }
 }
 
-struct Pagination: Codable {
-    let page: Int
-    let limit: Int
-    let total: Int
-    let totalPages: Int
-}
-
-// MARK: - Style
+// MARK: Style
 extension ParkingLot {
     var areaStyle: AreaStyle {
         return .init(rawValue: area) ?? .none

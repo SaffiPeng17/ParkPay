@@ -60,6 +60,12 @@ extension APIService {
 // MARK: - 🔒 Private Methods
 private extension APIService {
     func requestURL(target: APITarget) -> URL? {
-        URLComponents(string: baseURL + target.path)?.url
+        guard var urlComponents = URLComponents(string: baseURL + target.path) else {
+            return nil
+        }
+        if !target.urlQueryItems.isEmpty {
+            urlComponents.queryItems = target.urlQueryItems
+        }
+        return urlComponents.url
     }
 }

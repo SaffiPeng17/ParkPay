@@ -8,15 +8,13 @@
 import SwiftUI
 
 struct SearchView: View {
+    @StateObject private var viewModel = SearchViewModel()
     @FocusState private var isSearchBarFocused: Bool
 
     @State private var searchText = ""
     @State private var showParkingLotInfo = false
     @State private var selectedParkingLot: ParkingLot? = nil
-    @State private var allParkingLots: [ParkingLot] = []
-    @State private var filteredParkingLots: [ParkingLot] = []
-
-    private let parkingLotService = ParkingLotService.shared
+    @State private var showToast = false
 
     var body: some View {
         VStack {
@@ -35,6 +33,7 @@ struct SearchView: View {
                 if !searchText.isEmpty {
                     Button {
                         searchText = ""
+                        viewModel.clearResults()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.gray)
@@ -64,10 +63,30 @@ struct SearchView: View {
                         .foregroundColor(.gray)
                 }
                 Spacer()
+            } else if viewModel.isLoading {
+                Spacer().frame(height: 100)
+                VStack(spacing: 12) {
+                    ProgressView()
+                    Text("Searching...")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+            } else if viewModel.parkingLots.isEmpty && !viewModel.isLoading {
+                Spacer().frame(height: 100)
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.magnifyingglass")
+                        .font(.system(size: 50))
+                        .foregroundColor(.gray.opacity(0.5))
+                    Text("No results found")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
             } else {
                 ScrollView {
                     VStack(spacing: 14) {
-                        ForEach(filteredParkingLots) { parkingLot in
+                        ForEach(viewModel.parkingLots) { parkingLot in
                             resultItem(parkingLot: parkingLot,
                                        isSelected: selectedParkingLot?.id == parkingLot.id)
                             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
@@ -77,11 +96,36 @@ struct SearchView: View {
                                 isSearchBarFocused = false // dismiss Keyboard
                                 showParkingLotInfo = true // show ParkingLotInfo
                             }
+                            .onAppear {
+                                guard viewModel.shouldLoadNextPage(currentItem: parkingLot) else { return }
+                                Task {
+                                    await viewModel.loadNextPage()
+                                }
+                            }
                         }
+
+                        // Loading more indicator
+                        if viewModel.isLoadingMore {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .padding(.vertical, 20)
+                                Spacer()
+                            }
+                        }
+
+                        Spacer(minLength: 120)
                     }
                     .padding(.top, 20)
                     .padding(.horizontal, 24)
                 }
+                .simultaneousGesture( // monitor drag gestures to reset TextField focus
+                    DragGesture().onChanged { _ in
+                        if isSearchBarFocused {
+                            isSearchBarFocused = false
+                        }
+                    }
+                )
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -100,14 +144,22 @@ struct SearchView: View {
             }
         }
         .onChange(of: searchText) { oldValue, newValue in
-            filteredParkingLots = parkingLotService.searchParkingLots(query: newValue, in: allParkingLots)
+            Task {
+                await viewModel.fetchParkingLots(keyword: newValue)
+            }
         }
-        .onAppear {
-            allParkingLots = parkingLotService.loadParkingLots()
+        .onChange(of: viewModel.errorMessage) { oldValue, newValue in
+            if newValue != nil {
+                showToast = true
+            }
         }
         .onTapGesture {
             isSearchBarFocused = false
         }
+        .toast(
+            isPresented: $showToast,
+            message: viewModel.errorMessage ?? "發生錯誤"
+        )
     }
 
     @ViewBuilder

@@ -18,4 +18,12 @@ extension Encodable {
             return [:]
         }
     }
+
+    func toQueryItems() -> [URLQueryItem] {
+        let mirror = Mirror(reflecting: self)
+        return mirror.children.compactMap { child in
+            guard let key = child.label else { return nil }
+            return URLQueryItem(name: key, value: "\(child.value)")
+        }
+    }
 }

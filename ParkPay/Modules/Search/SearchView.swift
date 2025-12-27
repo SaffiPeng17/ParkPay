@@ -113,9 +113,26 @@ struct SearchView: View {
     @ViewBuilder
     private func resultItem(parkingLot: ParkingLot, isSelected: Bool) -> some View {
         HStack(alignment: .top, spacing: 8) {
-            TagView(area: parkingLot.area,
-                    areaStyle: parkingLot.areaStyle,
-                    hasOutline: false)
+            VStack(spacing: 6) {
+                TagView(area: parkingLot.area,
+                        areaStyle: parkingLot.areaStyle,
+                        hasOutline: false)
+
+                HStack(alignment: .center, spacing: 2) {
+                    if parkingLot.totalCar > 0 {
+                        vehicleTypeView(icon: "car.fill")
+                    }
+                    if parkingLot.totalMotor > 0 {
+                        vehicleTypeView(icon: "motorcycle.fill")
+                    }
+                    if parkingLot.totalBike > 0 {
+                        vehicleTypeView(icon: "bicycle")
+                    }
+                    if parkingLot.totalBus > 0 {
+                        vehicleTypeView(icon: "bus.fill")
+                    }
+                }
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(parkingLot.name)
@@ -138,6 +155,13 @@ struct SearchView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(isSelected ? .black.opacity(0.8) : .gray.opacity(0.2), lineWidth: 1)
         )
+    }
+
+    @ViewBuilder
+    private func vehicleTypeView(icon: String) -> some View {
+        Image(systemName: icon)
+            .font(.system(size: 10))
+            .foregroundStyle(.blue)
     }
 }
 

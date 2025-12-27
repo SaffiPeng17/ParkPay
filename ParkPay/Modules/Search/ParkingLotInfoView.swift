@@ -72,7 +72,7 @@ struct ParkingLotInfoView: View {
         VStack(spacing: 8) {
             Text(title)
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(.black)
+                .foregroundStyle(parkingLot.areaStyle.titleColor)
                 .padding(.top, 10)
                 .padding(.horizontal, 14)
 
@@ -91,14 +91,14 @@ struct ParkingLotInfoView: View {
                 )
         }
         .frame(width: 90)
-        .background(
+        .background {
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(hex: "#F4CF53"))
-        )
-        .overlay(
+                .fill(parkingLot.areaStyle.backgroundColor)
+        }
+        .overlay {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(.gray.opacity(0.4), lineWidth: 1)
-        )
+        }
     }
 
     @ViewBuilder
@@ -107,7 +107,7 @@ struct ParkingLotInfoView: View {
             if !icon.isEmpty {
                 Image(systemName: icon)
                     .font(.system(size: 15))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(parkingLot.areaStyle.backgroundColor)
             }
 
             Text(content)

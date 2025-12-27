@@ -12,4 +12,9 @@ extension APIService {
     func fetchParkingLots(request: ParkingLotsRequest) async throws -> ParkingLotsResponse {
         try await self.request(target: APITarget.parkingLots(request: request))
     }
+
+    // Get a parking lot info with realtime spaces
+    func fetchParkingLotInfo(parkID: String) async throws -> ParkingLotInfoResponse {
+        try await self.request(target: APITarget.parkingLotInfo(parkID: parkID))
+    }
 }

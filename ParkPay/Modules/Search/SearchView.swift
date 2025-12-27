@@ -132,7 +132,8 @@ struct SearchView: View {
         .background(.white)
         .fullScreenCover(isPresented: $showParkingLotInfo) {
             if let parkingLot = selectedParkingLot {
-                ParkingLotInfoView(parkingLot: parkingLot)
+                let viewModel = ParkingLotInfoViewModel(parkID: parkingLot.parkID)
+                ParkingLotInfoView(viewModel: viewModel)
             }
         }
         .transaction { transaction in

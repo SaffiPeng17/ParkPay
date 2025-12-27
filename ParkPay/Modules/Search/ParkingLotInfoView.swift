@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct ParkingLotInfoView: View {
-    let parkingLot: ParkingLot
-
     @Environment(\.dismiss) private var dismiss
-    
+    @StateObject private var viewModel: ParkingLotInfoViewModel
+
     @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0
+    @State private var showToast = false
+
+    init(viewModel: ParkingLotInfoViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         ZStack(alignment: .center) {
@@ -26,33 +30,65 @@ struct ParkingLotInfoView: View {
             ZStack {
                 Color.white.cornerRadius(20)
 
-                VStack(alignment: .center, spacing: 18) {
-                    // Title
-                    HStack(spacing: 8) {
-                        TagView(area: parkingLot.area,
-                                areaStyle: parkingLot.areaStyle,
-                                hasOutline: false)
+                if let parkingLotInfo = viewModel.parkingLotInfo {
+                    // Content
+                    VStack(alignment: .center, spacing: 18) {
+                        // Title
+                        HStack(spacing: 8) {
+                            TagView(area: parkingLotInfo.area,
+                                    areaStyle: parkingLotInfo.areaStyle,
+                                    hasOutline: false)
 
-                        Text(parkingLot.name)
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.black)
+                            Text(parkingLotInfo.name)
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(.black)
+                        }
+                        // LeftCount, TotalCount
+                        HStack(spacing: 30) {
+                            parkingSpacesItem(title: "剩餘車位",
+                                              count: parkingLotInfo.realtime.availableSpaces,
+                                              style: parkingLotInfo.areaStyle,
+                                              highlight: true)
+                            parkingSpacesItem(title: "總共車位",
+                                              count: parkingLotInfo.realtime.totalSpaces,
+                                              style: parkingLotInfo.areaStyle)
+                        }
+                        // Details
+                        VStack(alignment: .center, spacing: 10) {
+                            infoItem(icon: "location",
+                                     content: parkingLotInfo.address,
+                                     style: parkingLotInfo.areaStyle)
+                            infoItem(icon: "phone",
+                                     content: parkingLotInfo.tel,
+                                     style: parkingLotInfo.areaStyle)
+                            infoItem(icon: "clock",
+                                     content: parkingLotInfo.serviceTime,
+                                     style: parkingLotInfo.areaStyle)
+                            priceItem(content: parkingLotInfo.payex)
+                        }
                     }
-                    // LeftCount, TotalCount
-                    HStack(spacing: 30) {
-                        parkingSpacesItem(title: "剩餘車位", count: 2, highlight: true)
-                        parkingSpacesItem(title: "總共車位", count: parkingLot.totalCar)
-                    }
-                    // Details
-                    VStack(alignment: .center, spacing: 10) {
-                        infoItem(icon: "location", content: parkingLot.address)
-                        infoItem(icon: "phone", content: parkingLot.tel)
-                        infoItem(icon: "clock", content: "24H")
-                        priceItem(content: "小型車：計時 30元/時(08-20)，20元/時(20-08)，展覽期間小型車60元/時(9-17)，停車全程以半小時計；月租 全日4，800元，日間4，000元(08-20)，夜間1，500元(週一至週五19-08，週六、日及政府行政機關放假之紀念日、民俗節日之全日)，大型重機2，400元/月。機車：20元/次，隔日另計；月租300元/月。")
+                    .padding(18)
+                } else {
+                    if viewModel.isLoading {
+                        // Loading state
+                        VStack(spacing: 16) {
+                            ProgressView()
+                                .foregroundStyle(.gray)
+                                .scaleEffect(1.2)
+                            Text("載入中...")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(.gray)
+                        }
+                        .padding(40)
+                    } else {
+                        Text("發生錯誤")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(.gray)
+                            .padding(40)
                     }
                 }
-                .padding(18)
             }
-            .frame(maxWidth: 340)
+            .frame(width: 320)
             .scaleEffect(scale)
             .opacity(opacity)
             .fixedSize()
@@ -61,18 +97,30 @@ struct ParkingLotInfoView: View {
                     scale = 1.0
                     opacity = 1.0
                 }
+                Task {
+                    await viewModel.fetchParkingLotInfo()
+                }
             }
         }
         .ignoresSafeArea()
         .presentationBackground(.clear)
+        .onChange(of: viewModel.errorMessage) { oldValue, newValue in
+            if newValue != nil {
+                showToast = true
+            }
+        }
+        .toast(
+            isPresented: $showToast,
+            message: viewModel.errorMessage ?? "發生錯誤"
+        )
     }
 
     @ViewBuilder
-    private func parkingSpacesItem(title: String, count: Int, highlight: Bool = false) -> some View {
+    private func parkingSpacesItem(title: String, count: Int, style: AreaStyle, highlight: Bool = false) -> some View {
         VStack(spacing: 8) {
             Text(title)
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(parkingLot.areaStyle.titleColor)
+                .foregroundStyle(style.titleColor)
                 .padding(.top, 10)
                 .padding(.horizontal, 14)
 
@@ -93,7 +141,7 @@ struct ParkingLotInfoView: View {
         .frame(width: 90)
         .background {
             RoundedRectangle(cornerRadius: 12)
-                .fill(parkingLot.areaStyle.backgroundColor)
+                .fill(style.backgroundColor)
         }
         .overlay {
             RoundedRectangle(cornerRadius: 12)
@@ -102,12 +150,12 @@ struct ParkingLotInfoView: View {
     }
 
     @ViewBuilder
-    private func infoItem(icon: String, content: String) -> some View {
+    private func infoItem(icon: String, content: String, style: AreaStyle) -> some View {
         HStack(spacing: 2) {
             if !icon.isEmpty {
                 Image(systemName: icon)
                     .font(.system(size: 15))
-                    .foregroundStyle(parkingLot.areaStyle.backgroundColor)
+                    .foregroundStyle(style.backgroundColor)
             }
 
             Text(content)
@@ -125,12 +173,5 @@ struct ParkingLotInfoView: View {
 }
 
 #Preview {
-    ParkingLotInfoView(parkingLot: .init(parkID: "1",
-                                         area: "南港區",
-                                         name: "世貿公園地下停車場",
-                                         address: "台北市南港區", tel: "02-21315235",
-                                         totalCar: 600,
-                                         totalMotor: 0,
-                                         totalBike: 0,
-                                         totalBus: 0))
+    ParkingLotInfoView(viewModel: .init(parkID: "1"))
 }

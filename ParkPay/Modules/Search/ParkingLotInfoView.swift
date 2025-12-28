@@ -14,6 +14,8 @@ struct ParkingLotInfoView: View {
     @State private var scale: CGFloat = 0.5
     @State private var opacity: Double = 0
     @State private var showToast = false
+    @State private var showCallConfirmation = false
+    @State private var phoneNumber = ""
 
     init(viewModel: ParkingLotInfoViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -144,10 +146,17 @@ struct ParkingLotInfoView: View {
                 showToast = true
             }
         }
-        .toast(
-            isPresented: $showToast,
-            message: viewModel.errorMessage ?? "發生錯誤"
-        )
+        .toast(isPresented: $showToast,
+               message: viewModel.errorMessage ?? "發生錯誤")
+        .alert("確定要撥打停車場服務專線嗎？",
+               isPresented: $showCallConfirmation) {
+            Button("是") {
+                if let url = URL(string: "tel://\(phoneNumber)") {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("否", role: .cancel) {}
+        }
     }
 
     @ViewBuilder
@@ -159,9 +168,9 @@ struct ParkingLotInfoView: View {
                 .padding(.top, 10)
                 .padding(.horizontal, 14)
 
-            Text("\(count)")
+            Text(count < 0 ? "--" : "\(count)")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(highlight ? Color(hex: "E76871") : .black)
+                .foregroundStyle(highlight ? .blue : .black)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 8)
                 .background {
@@ -216,7 +225,15 @@ struct ParkingLotInfoView: View {
 
             Text(content)
                 .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(.black)
+                .foregroundStyle(icon == "phone" ? .blue : .black)
+                .underline(icon == "phone")
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if icon == "phone" {
+                phoneNumber = content
+                showCallConfirmation = true
+            }
         }
     }
 

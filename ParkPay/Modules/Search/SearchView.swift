@@ -67,6 +67,7 @@ struct SearchView: View {
                 Spacer().frame(height: 100)
                 VStack(spacing: 12) {
                     ProgressView()
+                        .tint(.gray)
                     Text("Searching...")
                         .font(.headline)
                         .foregroundColor(.gray)
@@ -110,6 +111,7 @@ struct SearchView: View {
                                 Spacer()
                                 ProgressView()
                                     .padding(.vertical, 20)
+                                    .tint(.gray)
                                 Spacer()
                             }
                         }
